@@ -152,6 +152,23 @@ export default function KanjiApp() {
   const handleSearch = async () => {
     setLoading(true);
     setResult(null);
+    try {
+      const res = await fetch("/api/suggest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ form }),
+      });
+      const data = await res.json();
+      if (data.error) setResult({ error: data.error });
+      else if (data.empty) setResult({ error: "条件に合うお店が見つかりませんでした。条件を変えて試してみてください。" });
+      else setResult(data);
+    } catch (e) {
+      setResult({ error: "提案の取得に失敗しました。もう一度お試しください。" });
+    }
+    setLoading(false);
+  };
+    setLoading(true);
+    setResult(null);
     const foodLabel = form.foods.length > 0 ? form.foods.join("・") : "何でもOK";
     const prompt = `あなたは東京の飲食店に詳しい幹事アシスタントです。
 以下の条件に合う架空のお店を3件提案してください（実在しない架空の店名・情報でOK）。
